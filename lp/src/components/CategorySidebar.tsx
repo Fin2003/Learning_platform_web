@@ -59,16 +59,6 @@ const categoryData: CategoryGroup[] = [
       { name: "团队协作", count: 12 },
       { name: "问题解决", count: 21 }
     ]
-  },
-  {
-    name: "生活分享",
-    icon: Heart,
-    categories: [
-      { name: "日常感悟", count: 14 },
-      { name: "读书心得", count: 6 },
-      { name: "旅行记录", count: 4 },
-      { name: "兴趣爱好", count: 11 }
-    ]
   }
 ]
 
@@ -144,9 +134,15 @@ export function CategorySidebar({ isCollapsed, onToggle }: { isCollapsed: boolea
                   onClick={() => toggleGroup(group.name)}
                   className="w-full text-left hover:bg-muted bg-transparent"
                 >
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 overflow-hidden">
                     <group.icon className="h-4 w-4 text-foreground" />
-                    <span className="font-medium text-foreground">{group.name}</span>
+                    <span
+                      className={`font-medium text-foreground whitespace-nowrap transform-gpu transition-all duration-300 ${
+                        textOpacity === 1 ? 'translate-x-0 opacity-100' : '-translate-x-3 opacity-0'
+                      }`}
+                    >
+                      {group.name}
+                    </span>
                   </div>
                   {openGroups.has(group.name) ? (
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
@@ -155,13 +151,19 @@ export function CategorySidebar({ isCollapsed, onToggle }: { isCollapsed: boolea
                   )}
                 </CollapsibleTrigger>
                 <CollapsibleContent isOpen={openGroups.has(group.name)}>
-                  <div className="ml-6 space-y-1 mt-2">
+                  <div className="ml-6 space-y-1 mt-2 overflow-hidden">
                     {group.categories.map((category) => (
                       <div
                         key={category.name}
                         className="flex items-center justify-between p-2 rounded hover:bg-muted cursor-pointer transition-colors"
                       >
-                        <span className="text-sm text-foreground">{category.name}</span>
+                        <span
+                          className={`text-sm text-foreground whitespace-nowrap transform-gpu transition-all duration-300 ${
+                            textOpacity === 1 ? 'translate-x-0 opacity-100' : '-translate-x-3 opacity-0'
+                          }`}
+                        >
+                          {category.name}
+                        </span>
                         <Badge variant="secondary" className="text-xs">
                           {category.count}
                         </Badge>

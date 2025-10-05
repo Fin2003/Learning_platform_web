@@ -70,8 +70,10 @@ export function RightSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean, 
               <Search className="h-4 w-4 text-muted-foreground" />
             </div>
           ) : (
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-foreground">搜索</h3>
+            <div className="space-y-2 overflow-hidden">
+              <h3 className={`text-sm font-medium text-foreground whitespace-nowrap transform-gpu transition-all duration-300 ${
+                isCollapsed ? '-translate-x-3 opacity-0' : 'translate-x-0 opacity-100'
+              }`}>搜索</h3>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -90,9 +92,9 @@ export function RightSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean, 
           {!isCollapsed && (
             <h3 className="text-sm font-medium text-foreground mb-3">动态类型</h3>
           )}
-          <div className="space-y-2">
+          <div className="space-y-2 overflow-hidden">
             {activityTypes.map((type, index) => (
-              <div key={index} className="flex items-center justify-between">
+              <div key={index} className="flex items-center justify-between overflow-hidden">
                 {isCollapsed ? (
                   <div className="flex flex-col items-center space-y-1 w-full">
                     <div className={`p-2 rounded-full ${type.color}`}>
@@ -102,13 +104,17 @@ export function RightSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean, 
                   </div>
                 ) : (
                   <>
-                    <div className="flex items-center space-x-2">
-                      <div className={`p-1 rounded-full ${type.color}`}>
+                    <div className="flex items-center space-x-2 overflow-hidden min-w-0 relative z-10">
+                      <div className={`p-1 rounded-full ${type.color} relative z-10`}>
                         <type.icon className="h-3 w-3 text-white" />
                       </div>
-                      <span className="text-sm text-foreground">{type.label}</span>
+                      <span className={`text-sm text-foreground whitespace-nowrap truncate transform-gpu transition-all duration-300 relative z-10 ${
+                        isCollapsed ? '-translate-x-3 opacity-0' : 'translate-x-0 opacity-100'
+                      }`}>{type.label}</span>
                     </div>
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge variant="secondary" className={`text-xs flex-none transform-gpu transition-all duration-300 relative z-0 ${
+                      isCollapsed ? '-translate-x-3 opacity-0' : 'translate-x-0 opacity-100'
+                    }`}>
                       {type.count}
                     </Badge>
                   </>
@@ -120,13 +126,17 @@ export function RightSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean, 
 
          {/* 热门话题 */}
          {!isCollapsed && (
-           <div className="px-2 mb-6">
-             <h3 className="text-sm font-medium text-foreground mb-3">热门话题</h3>
+           <div className="px-2 mb-6 overflow-hidden">
+             <h3 className={`text-sm font-medium text-foreground mb-3 whitespace-nowrap transform-gpu transition-all duration-300 ${
+               isCollapsed ? '-translate-x-3 opacity-0' : 'translate-x-0 opacity-100'
+             }`}>热门话题</h3>
              <div className="space-y-2">
                {trendingTopics.map((topic, index) => (
-                 <div key={index} className="flex items-center">
-                   <Hash className="h-4 w-4 text-muted-foreground mr-2" />
-                   <span className="text-sm text-foreground">{topic}</span>
+                 <div key={index} className="flex items-center overflow-hidden">
+                   <Hash className="h-4 w-4 text-muted-foreground mr-2 flex-none" />
+                   <span className={`text-sm text-foreground whitespace-nowrap truncate min-w-0 transform-gpu transition-all duration-300 ${
+                     isCollapsed ? '-translate-x-3 opacity-0' : 'translate-x-0 opacity-100'
+                   }`}>{topic}</span>
                  </div>
                ))}
              </div>

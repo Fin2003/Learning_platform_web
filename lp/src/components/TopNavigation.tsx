@@ -1,11 +1,9 @@
-import { Bell, Settings, User, LogOut, Sun, Moon } from "lucide-react"
+import { Bell, Settings, User, LogOut } from "lucide-react"
 import { Button } from "./ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { useTheme } from "./ThemeProvider"
 
 export function TopNavigation() {
-  const { theme, toggleTheme } = useTheme()
   
   const user = {
     name: "你好，小明",
@@ -64,15 +62,6 @@ export function TopNavigation() {
                 <DropdownMenuItem>
                   <Settings className="mr-2 h-5 w-5" />
                   <span>账户设置</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={(e) => toggleTheme(e)}>
-                  {theme === "light" ? (
-                    <Moon className="mr-2 h-5 w-5" />
-                  ) : (
-                    <Sun className="mr-2 h-5 w-5" />
-                  )}
-                  <span>{theme === "light" ? "夜间模式" : "日间模式"}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-red-600">

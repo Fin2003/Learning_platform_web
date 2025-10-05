@@ -2,66 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 主题切换动画 */
-@keyframes themeTransitionExpand {
-  from {
-    clip-path: circle(0px at var(--click-x) var(--click-y));
-  }
-  to {
-    clip-path: circle(2000px at var(--click-x) var(--click-y));
-  }
-}
-
-.theme-transition-container {
-  position: relative;
-}
-
-/* 圆形动画只影响中间内容区域 */
-.theme-transition-container.transitioning .main-content {
-  position: relative;
-}
-
-.theme-transition-container.transitioning .main-content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: white;
-  mix-blend-mode: difference;
-  pointer-events: none;
-  z-index: 1;
-  clip-path: circle(0px at var(--click-x) var(--click-y));
-  animation: themeTransitionExpand 0.3s ease-out;
-}
-
-/* 侧边栏和顶栏不使用任何动画，保持原样 */
-.theme-transition-container.transitioning .sidebar,
-.theme-transition-container.transitioning .top-navigation {
-  /* 什么都不做，保持原样 */
-}
-
-/* 确保图标和图片在差值层之上，不受差值模式影响 */
-.theme-transition-container img,
-.theme-transition-container svg,
-.theme-transition-container [class*="lucide"],
-.theme-transition-container .lucide-react,
-.theme-transition-container button svg,
-.theme-transition-container [data-lucide] {
-  position: relative;
-  z-index: 10;
-  mix-blend-mode: normal !important;
-  isolation: isolate;
-}
-
-/* 保护所有图标容器 */
-.theme-transition-container button,
-.theme-transition-container [role="button"] {
-  position: relative;
-  z-index: 5;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -107,9 +47,7 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 210 100% 70%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
@@ -128,87 +66,5 @@
     min-height: 100vh !important;
     margin: 0 !important;
     padding: 0 !important;
-  }
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #3178c6aa);
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
   }
 }
