@@ -7,6 +7,7 @@ import { CategorySidebar } from './components/CategorySidebar'
 import { QuickPost } from './components/QuickPost'
 import { ActivityFeed } from './components/ActivityFeed'
 import { RightSidebar } from './components/RightSidebar'
+import { FloatingThemeToggle } from './components/FloatingThemeToggle'
 
 function App() {
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false)
@@ -48,6 +49,9 @@ function App() {
           />
         </div>
       </div>
+      
+      {/* 浮动主题切换按钮 */}
+      <FloatingThemeToggle />
     </div>
   )
 }
