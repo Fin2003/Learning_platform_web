@@ -5,7 +5,6 @@ import { Badge } from "./ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { 
   Search, 
-  User, 
   Hash, 
   FileText, 
   BookOpen, 
@@ -38,22 +37,16 @@ export function RightSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean, 
     "前端优化"
   ]
 
-  const activeUsers = [
-    { name: "张三", avatar: "/avatars/user1.jpg", status: "online" },
-    { name: "李四", avatar: "/avatars/user2.jpg", status: "away" },
-    { name: "王五", avatar: "/avatars/user3.jpg", status: "online" },
-    { name: "赵六", avatar: "/avatars/user4.jpg", status: "offline" }
-  ]
 
   const handleToggle = () => {
     onToggle()
   }
 
   return (
-    <div className={`bg-background border-l border-border transition-all duration-300 ${
+    <div className={`bg-background border-l border-border transition-all duration-300 min-h-screen ${
       isCollapsed ? 'w-16' : 'w-56'
     } flex-shrink-0`}>
-      <div className="px-0 py-4 h-full flex flex-col">
+      <div className="px-0 py-4 min-h-screen flex flex-col">
         {/* 切换按钮 */}
         <div className="px-2 mb-4">
           <Button

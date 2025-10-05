@@ -2,6 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 主题切换动画 */
+@keyframes themeTransitionExpand {
+  from {
+    clip-path: circle(0px at var(--click-x) var(--click-y));
+  }
+  to {
+    clip-path: circle(2000px at var(--click-x) var(--click-y));
+  }
+}
+
+.theme-transition-container {
+  position: relative;
+}
+
+/* 圆形动画只影响中间内容区域 */
+.theme-transition-container.transitioning .main-content {
+  position: relative;
+}
+
+.theme-transition-container.transitioning .main-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  z-index: 1;
+  clip-path: circle(0px at var(--click-x) var(--click-y));
+  animation: themeTransitionExpand 0.3s ease-out;
+}
+
+/* 侧边栏和顶栏不使用任何动画，保持原样 */
+.theme-transition-container.transitioning .sidebar,
+.theme-transition-container.transitioning .top-navigation {
+  /* 什么都不做，保持原样 */
+}
+
+/* 确保图标和图片在差值层之上，不受差值模式影响 */
+.theme-transition-container img,
+.theme-transition-container svg,
+.theme-transition-container [class*="lucide"],
+.theme-transition-container .lucide-react,
+.theme-transition-container button svg,
+.theme-transition-container [data-lucide] {
+  position: relative;
+  z-index: 10;
+  mix-blend-mode: normal !important;
+  isolation: isolate;
+}
+
+/* 保护所有图标容器 */
+.theme-transition-container button,
+.theme-transition-container [role="button"] {
+  position: relative;
+  z-index: 5;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -10,8 +70,8 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 210 100% 70%;
+    --primary-foreground: 222.2 84% 4.9%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 84% 4.9%;
     --muted: 210 40% 96%;
@@ -22,7 +82,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 210 100% 70%;
     --radius: 0.5rem;
   }
 
@@ -33,8 +93,8 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 210 100% 70%;
+    --primary-foreground: 222.2 84% 4.9%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
@@ -45,7 +105,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 210 100% 70%;
   }
 }
 
@@ -57,7 +117,7 @@
     margin: 0 !important;
     padding: 0 !important;
     width: 100vw !important;
-    height: 100vh !important;
+    min-height: 100vh !important;
     overflow-x: hidden;
   }
   body {
@@ -65,7 +125,7 @@
   }
   #app {
     width: 100vw !important;
-    height: 100vh !important;
+    min-height: 100vh !important;
     margin: 0 !important;
     padding: 0 !important;
   }
