@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import './style.css'
 import { ThemeProvider } from './components/ThemeProvider'
@@ -10,8 +10,20 @@ import { RightSidebar } from './components/RightSidebar'
 import { FloatingThemeToggle } from './components/FloatingThemeToggle'
 
 function App() {
-  const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false)
-  const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false)
+  const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState<boolean>(() => {
+    try { return localStorage.getItem('lp:leftSidebarCollapsed') === 'true' } catch { return false }
+  })
+  const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState<boolean>(() => {
+    try { return localStorage.getItem('lp:rightSidebarCollapsed') === 'true' } catch { return false }
+  })
+
+  useEffect(() => {
+    try { localStorage.setItem('lp:leftSidebarCollapsed', String(leftSidebarCollapsed)) } catch {}
+  }, [leftSidebarCollapsed])
+
+  useEffect(() => {
+    try { localStorage.setItem('lp:rightSidebarCollapsed', String(rightSidebarCollapsed)) } catch {}
+  }, [rightSidebarCollapsed])
 
   return (
     <div className="min-h-screen w-screen bg-background" style={{width: '100vw', margin: 0}}>
