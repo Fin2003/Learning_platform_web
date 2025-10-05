@@ -120,8 +120,8 @@ export function CategorySidebar({ isCollapsed, onToggle }: { isCollapsed: boolea
   }
 
   return (
-    <div className={`bg-background border-r transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-56'}`}>
-      <div className="px-0 py-10">
+    <div className={`bg-background border-r transition-all duration-300 min-h-screen ${isCollapsed ? 'w-20' : 'w-56'}`}>
+      <div className="px-0 py-10 min-h-screen">
         <Button
           variant="ghost"
           size="sm"
