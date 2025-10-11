@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react"
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion, LayoutGroup } from "framer-motion"
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 import { 
@@ -118,7 +118,7 @@ const initialCategoryData: CategoryGroup[] = [
 ]
 
 // Sortable Sub Item Component
-const SortableSubItem = ({ category, gIndex, sIndex, isEdit, activeId, overId, isStaged, onToggleSelect, editingSubId, editingSubText, onEditingChange, onCommitEdit, startLongPress, clearLongPress }: any) => {
+const SortableSubItem = ({ category, gIndex, sIndex, isEdit, isEditAnimating, activeId, overId, isStaged, onToggleSelect, editingSubId, editingSubText, onEditingChange, onCommitEdit, startLongPress, clearLongPress }: any) => {
   const {
     attributes,
     listeners,
@@ -170,8 +170,15 @@ const SortableSubItem = ({ category, gIndex, sIndex, isEdit, activeId, overId, i
         layout
         transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
       >
+        <motion.div
+          className="flex items-center gap-1"
+          initial={false}
+          animate={{ scaleX: (isEdit || isEditAnimating) && !isEditing ? 1 : 0, opacity: (isEdit || isEditAnimating) && !isEditing ? 1 : 0 }}
+          transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
+          style={{ transformOrigin: 'left center' }}
+        >
         <AnimatePresence>
-          {isEdit && !isEditing && (
+          {(isEdit || isEditAnimating) && !isEditing && (
             <motion.input
               key={`sub-checkbox-${gIndex}-${sIndex}`}
               type="checkbox"
@@ -187,7 +194,7 @@ const SortableSubItem = ({ category, gIndex, sIndex, isEdit, activeId, overId, i
           )}
         </AnimatePresence>
         <AnimatePresence>
-          {isEdit && !isEditing && (
+          {(isEdit || isEditAnimating) && !isEditing && (
             <motion.div 
               key={`sub-grip-${gIndex}-${sIndex}`}
               className="cursor-grab p-1 hover:bg-muted rounded"
@@ -200,6 +207,7 @@ const SortableSubItem = ({ category, gIndex, sIndex, isEdit, activeId, overId, i
             </motion.div>
           )}
         </AnimatePresence>
+        </motion.div>
         {isEditing ? (
           <input
             autoFocus
@@ -233,7 +241,7 @@ const SortableSubItem = ({ category, gIndex, sIndex, isEdit, activeId, overId, i
 }
 
 // Sortable Sub Items Component
-const SortableSubItems = ({ group, gIndex, isEdit, activeId, overId, isStaged, onToggleSubSelect, onAddSub, editingSubId, editingSubText, onEditingChange, onCommitEdit, startLongPress, clearLongPress }: any) => {
+const SortableSubItems = ({ group, gIndex, isEdit, isEditAnimating, activeId, overId, isStaged, onToggleSubSelect, onAddSub, editingSubId, editingSubText, onEditingChange, onCommitEdit, startLongPress, clearLongPress }: any) => {
   const {
     setNodeRef,
     isOver,
@@ -287,6 +295,7 @@ const SortableSubItems = ({ group, gIndex, isEdit, activeId, overId, isStaged, o
             gIndex={gIndex}
             sIndex={sIndex}
             isEdit={isEdit}
+            isEditAnimating={isEditAnimating}
             activeId={activeId}
             overId={overId}
             isStaged={isStaged}
@@ -308,7 +317,7 @@ const SortableSubItems = ({ group, gIndex, isEdit, activeId, overId, isStaged, o
 
 
 // Sortable Group Component
-const SortableGroup = ({ group, gIndex, isEdit, openGroups, toggleGroup, startLongPress, clearLongPress, activeId, overId, isStaged, onToggleGroupSelect, onToggleSubSelect, onAddSub, editingSubId, editingSubText, onEditingChange, onCommitEdit }: any) => {
+const SortableGroup = ({ group, gIndex, isEdit, isEditAnimating, openGroups, toggleGroup, startLongPress, clearLongPress, activeId, overId, isStaged, onToggleGroupSelect, onToggleSubSelect, onAddSub, editingSubId, editingSubText, onEditingChange, onCommitEdit }: any) => {
   const {
     attributes,
     listeners,
@@ -360,36 +369,44 @@ const SortableGroup = ({ group, gIndex, isEdit, openGroups, toggleGroup, startLo
           {...(isEdit && !groupSelected ? attributes : {})}
           {...(isEdit && !groupSelected ? listeners : {})}
         >
-          <AnimatePresence>
-            {isEdit && (
-              <motion.input
-                key="group-checkbox"
-                type="checkbox"
-                className="h-3.5 w-3.5 accent-destructive"
-                checked={groupSelected}
-                onChange={(e) => { e.stopPropagation(); onToggleGroupSelect && onToggleGroupSelect(gIndex, groupSelected) }}
-                onClick={(e) => e.stopPropagation()}
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -20, opacity: 0 }}
-                transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
-              />
-            )}
-          </AnimatePresence>
-          <AnimatePresence>
-            {isEdit && (
-              <motion.div 
-                key="group-grip"
-                className="cursor-grab p-1 hover:bg-muted rounded"
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -20, opacity: 0 }}
-                transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
-              >
-                <GripVertical className="h-3 w-3 text-muted-foreground flex-none" />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <motion.div
+            className="flex items-center gap-1"
+            initial={false}
+            animate={{ scaleX: (isEdit || isEditAnimating) ? 1 : 0, opacity: (isEdit || isEditAnimating) ? 1 : 0 }}
+            transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
+            style={{ transformOrigin: 'left center' }}
+          >
+         <AnimatePresence>
+           {(isEdit || isEditAnimating) && (
+             <motion.input
+               key="group-checkbox"
+               type="checkbox"
+               className="h-3.5 w-3.5 accent-destructive"
+               checked={groupSelected}
+               onChange={(e) => { e.stopPropagation(); onToggleGroupSelect && onToggleGroupSelect(gIndex, groupSelected) }}
+               onClick={(e) => e.stopPropagation()}
+               initial={{ x: -20, opacity: 0 }}
+               animate={{ x: 0, opacity: 1 }}
+               exit={{ x: -20, opacity: 0 }}
+               transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
+             />
+           )}
+         </AnimatePresence>
+         <AnimatePresence>
+           {(isEdit || isEditAnimating) && (
+             <motion.div 
+               key="group-grip"
+               className="cursor-grab p-1 hover:bg-muted rounded"
+               initial={{ x: -20, opacity: 0 }}
+               animate={{ x: 0, opacity: 1 }}
+               exit={{ x: -20, opacity: 0 }}
+               transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
+             >
+               <GripVertical className="h-3 w-3 text-muted-foreground flex-none" />
+             </motion.div>
+           )}
+         </AnimatePresence>
+          </motion.div>
           <motion.div
             layoutId={`group-icon-${gIndex}`}
             transition={{ type: "tween", duration: 0.5 as any, ease: [0.38, 0.07, 0.49, 0.94] as any }}
@@ -441,6 +458,7 @@ const SortableGroup = ({ group, gIndex, isEdit, openGroups, toggleGroup, startLo
               group={group}
               gIndex={gIndex}
               isEdit={isEdit}
+              isEditAnimating={isEditAnimating}
               activeId={activeId}
               overId={overId}
               isStaged={isStaged}
@@ -472,6 +490,7 @@ export default function CategorySidebar({ isCollapsed, onToggle }: CategorySideb
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const longPressDelayMs = 500
   const [isEdit, setIsEdit] = useState(false)
+  const [isEditAnimating, setIsEditAnimating] = useState(false)
   
   // Drag state management
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -669,14 +688,23 @@ export default function CategorySidebar({ isCollapsed, onToggle }: CategorySideb
     setDeleteMode('single')
     setIsEdit(false)
   }
+
+  const requestExitEdit = () => {
+    if (!isEdit) return
+    // 先触发动画帧，让行内控件和布局收起
+    setIsEditAnimating(true)
+    // 在动画完成后再真正退出编辑模式
+    window.setTimeout(() => {
+      exitEdit()
+      setIsEditAnimating(false)
+    }, 300)
+  }
   
   const handleToggle = () => {
     if (!isCollapsed) {
       // 如果当前是展开状态，点击收起
       // 如果在编辑模式下，先退出编辑模式
-      if (isEdit) {
-        exitEdit()
-      }
+      if (isEdit) requestExitEdit()
       setTextOpacity(0) // 开始淡出
       // 延迟0.2秒后真正收起
       setTimeout(() => {
@@ -726,16 +754,65 @@ export default function CategorySidebar({ isCollapsed, onToggle }: CategorySideb
     const activeIdStr = args?.active?.id?.toString?.() || ''
     if (activeIdStr.startsWith('sub-')) {
       const [, activeGIndex] = activeIdStr.split('-')
-      const filtered = results.filter((r: any) => {
+      const remapped = results.map((r: any) => {
+        const idStr = r?.id?.toString?.() || ''
+        // 其它组的任意元素（group- / sub-container- / sub-）全部映射为其 group-*
+        if (idStr.startsWith('group-')) {
+          const [, gIndexStr] = idStr.split('-')
+          if (gIndexStr !== activeGIndex) return { ...r, id: `group-${gIndexStr}` }
+          return r
+        }
+        if (idStr.startsWith('sub-container-')) {
+          const [, , gIndexStr] = idStr.split('-')
+          if (gIndexStr !== activeGIndex) return { ...r, id: `group-${gIndexStr}` }
+          // 同组容器过滤掉，避免“添加子项”成为顶部落点
+          return { ...r, id: `ignore-${idStr}` }
+        }
+        if (idStr.startsWith('sub-')) {
+          const [, gIndexStr] = idStr.split('-')
+          if (gIndexStr !== activeGIndex) return { ...r, id: `group-${gIndexStr}` }
+          // 同组子项保持原样，继续支持组内排序
+          return r
+        }
+        return r
+      })
+      // 过滤 ignore-*，仅保留有效命中，并对 group-* 去重，保持原顺序
+      const seen = new Set<string>()
+      const deduped: any[] = []
+      for (const r of remapped) {
+        const idStr = r?.id?.toString?.() || ''
+        if (idStr.startsWith('ignore-')) continue
+        if (idStr.startsWith('group-')) {
+          if (!seen.has(idStr)) { seen.add(idStr); deduped.push(r) }
+          continue
+        }
+        deduped.push(r)
+      }
+      return deduped
+    }
+    // 主项拖拽时：将展开的 sub-container-{g} 与 sub-{g}-{s} 统统视为其 group-{g}
+    if (activeIdStr.startsWith('group-')) {
+      const remapped = results.map((r: any) => {
         const idStr = r?.id?.toString?.() || ''
         if (idStr.startsWith('sub-container-')) {
           const [, , gIndexStr] = idStr.split('-')
-          // 仅过滤同组容器；跨组容器仍可命中（用于跨组移动）
-          return gIndexStr !== activeGIndex
+          return { ...r, id: `group-${gIndexStr}` }
         }
-        return true
+        if (idStr.startsWith('sub-')) {
+          const [, gIndexStr] = idStr.split('-')
+          return { ...r, id: `group-${gIndexStr}` }
+        }
+        return r
       })
-      return filtered
+      // 仅保留 group-* 命中，并去重，保持原有排序优先级
+      const seen = new Set<string>()
+      const deduped: any[] = []
+      for (const r of remapped) {
+        const idStr = r?.id?.toString?.() || ''
+        if (!idStr.startsWith('group-')) continue
+        if (!seen.has(idStr)) { seen.add(idStr); deduped.push(r) }
+      }
+      return deduped.length ? deduped : remapped
     }
     return results
   }
@@ -1043,6 +1120,25 @@ export default function CategorySidebar({ isCollapsed, onToggle }: CategorySideb
         })
       }
     }
+    // 处理子项拖拽到主项（整组高光命中后，将子项加入该主项）
+    else if (activeId.startsWith('sub-') && overId.startsWith('group-')) {
+      const [, activeGIndex, activeSIndex] = activeId.split('-')
+      const toGIndex = parseInt(overId.replace('group-',''))
+      const fromG = parseInt(activeGIndex)
+      const fromS = parseInt(activeSIndex)
+      console.log('Move sub to group:', { fromG, fromS, toGIndex })
+      setGroups((items) => {
+        const newItems = [...items]
+        const [movedItem] = newItems[fromG].categories.splice(fromS, 1)
+        // 插入到目标组末尾（也可以改为特定位置策略）
+        newItems[toGIndex].categories.push(movedItem)
+        console.log('After move to group:', {
+          to: newItems[toGIndex].categories.map(c => c.name),
+          from: newItems[fromG].categories.map(c => c.name),
+        })
+        return newItems
+      })
+    }
     
     console.log('=== Drag End Complete ===')
     
@@ -1071,179 +1167,182 @@ export default function CategorySidebar({ isCollapsed, onToggle }: CategorySideb
         </Button>
         
 
-        {/* 内容区域：收起和展开模式重叠 */}
-        <div className="relative min-h-[200px]">
-          {/* 收起模式：只显示图标 */}
-          <AnimatePresence>
-            {!showText && (
-              <motion.div 
-                key="collapsed-mode"
-                className="space-y-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ type: "tween", duration: 0.3, delay: 0.2 } as any}
-              >
-                {groups.map((group, gIndex) => (
-                  <motion.div
-                    key={`collapsed-${group.name}`}
-                    layoutId={`group-icon-${gIndex}`}
-                    className="flex items-center justify-center p-3 rounded hover:bg-muted/30 cursor-pointer w-12 h-12"
-                    onClick={() => toggleGroup(group.name)}
-                    onMouseDown={() => { if (!isEdit && startLongPress) startLongPress(`group-${gIndex}`) }}
-                    onMouseUp={() => { if (!isEdit && clearLongPress) clearLongPress() }}
-                    onMouseLeave={() => { if (!isEdit && clearLongPress) clearLongPress() }}
-                    onTouchStart={() => { if (!isEdit && startLongPress) startLongPress(`group-${gIndex}`) }}
-                    onTouchEnd={() => { if (!isEdit && clearLongPress) clearLongPress() }}
-                    transition={{ type: "tween", duration: 0.5 as any, ease: [0.38, 0.07, 0.49, 0.94] as any }}
-                  >
-                    <group.icon className="h-5 w-5 text-foreground" />
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+        {/* 内容层容器：使收起与展开层重叠，并统一布局动画 */}
+        <LayoutGroup>
+        <div className="relative">
+        {/* 收起模式：只显示图标（置于上层，便于先行位移动画） */}
+        <AnimatePresence>
+          {!showText && (
+            <motion.div 
+              key="collapsed-mode"
+              className="absolute inset-0 z-10 space-y-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ type: "tween", duration: 0.3, delay: 0.2 } as any}
+            >
+              {groups.map((group, gIndex) => (
+                <motion.div
+                  key={`collapsed-${group.name}`}
+                  layoutId={`group-icon-${gIndex}`}
+                  className="flex items-center justify-center p-3 rounded hover:bg-muted/30 cursor-pointer w-12 h-12"
+                  onClick={() => toggleGroup(group.name)}
+                  onMouseDown={() => { if (!isEdit && startLongPress) startLongPress(`group-${gIndex}`) }}
+                  onMouseUp={() => { if (!isEdit && clearLongPress) clearLongPress() }}
+                  onMouseLeave={() => { if (!isEdit && clearLongPress) clearLongPress() }}
+                  onTouchStart={() => { if (!isEdit && startLongPress) startLongPress(`group-${gIndex}`) }}
+                  onTouchEnd={() => { if (!isEdit && clearLongPress) clearLongPress() }}
+                  transition={{ type: "tween", duration: 0.5 as any, ease: [0.38, 0.07, 0.49, 0.94] as any }}
+                >
+                  <group.icon className="h-5 w-5 text-foreground" />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-          {/* 展开模式：显示完整内容 */}
-          <AnimatePresence>
-            {showText && (
-              <motion.div 
-                key="expanded-mode"
-                className="space-y-4 absolute top-0 left-0 w-full z-10" 
-                style={{opacity: textOpacity, transition: 'opacity 0.2s ease-in-out'}}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ type: "tween", duration: 0.3, delay: 0.1 } as any}
+        {/* 展开模式：显示完整内容（底层） */}
+        <AnimatePresence>
+          {showText && (
+            <motion.div 
+              key="expanded-mode"
+              className="space-y-4"
+              style={{opacity: textOpacity, transition: 'opacity 0.2s ease-in-out'}}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ type: "tween", duration: 0.3, delay: 0.1 } as any}
+            >
+            {/* 顶部：编辑模式下显示"新建主项"占位按钮 */}
+            <AnimatePresence>
+              {isEdit && (
+                <motion.button
+                  key="add-group"
+                  type="button"
+                  onClick={openNewGroupDialog}
+                  className="w-full border-2 border-dashed border-border rounded-md py-4 px-3 flex items-center justify-center hover:bg-muted/40 transition-colors"
+                  initial={{ y: -10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -10, opacity: 0 }}
+            transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
+                >
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Plus className="h-4 w-4" />
+                    <span className="text-sm">新建主项</span>
+                  </div>
+                </motion.button>
+              )}
+            </AnimatePresence>
+
+            <DndContext
+              sensors={sensors}
+              collisionDetection={customCollisionDetection}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
+              measuring={{
+                droppable: {
+                  strategy: MeasuringStrategy.WhileDragging,
+                },
+              }}
+            >
+              <SortableContext
+                items={groupItems}
+                strategy={verticalListSortingStrategy}
+                key={`group-context-${groupItems.length}`}
               >
-                {/* 顶部：编辑模式下显示"新建主项"占位按钮 */}
-                <AnimatePresence>
-                  {isEdit && (
-                    <motion.button
-                      key="add-group"
-                      type="button"
-                      onClick={openNewGroupDialog}
-                      className="w-full border-2 border-dashed border-border rounded-md py-4 px-3 flex items-center justify-center hover:bg-muted/40 transition-colors"
-                      initial={{ y: -10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: -10, opacity: 0 }}
+                <div className="space-y-2">
+                  {groups.map((group, gIndex) => (
+                    <SortableGroup
+                      key={`group-${gIndex}`}
+                      group={group}
+                      gIndex={gIndex}
+                      isEdit={isEdit}
+                      isEditAnimating={isEditAnimating}
+                      openGroups={openGroups}
+                      toggleGroup={toggleGroup}
+                      startLongPress={startLongPress}
+                      clearLongPress={clearLongPress}
+                      activeId={activeId}
+                      overId={overId}
+                      isStaged={isStaged}
+                      onToggleGroupSelect={handleToggleGroupSelect}
+                      onToggleSubSelect={handleToggleSubSelect}
+                      onAddSub={handleAddSub}
+                      editingSubId={editingSubId}
+                      editingSubText={editingSubText}
+                      onEditingChange={handleEditingChange}
+                      onCommitEdit={handleCommitEdit}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+              
+              {/* 拖拽覆盖层 - 禁用动画 */}
+              <DragOverlay dropAnimation={null}>
+                {activeItem ? (
+                  <div className="flex items-center justify-between p-2 rounded bg-background border border-border shadow-lg -translate-y-1/2">
+                    <div className="flex items-center space-x-2">
+                      <GripVertical className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-sm text-foreground">{activeItem.name}</span>
+                    </div>
+                    <Badge variant="secondary" className="text-xs">
+                      {activeItem.count}
+                    </Badge>
+                  </div>
+                ) : null}
+              </DragOverlay>
+
+              {/* 删除投递区覆盖层（拖拽中或手动展开时显示；带放大/缩小动画） */}
+              <AnimatePresence>
+                {(isDragging || keepTrashVisible) && (
+                  <motion.div
+                    className="fixed inset-0 z-40 pointer-events-none"
+                    onClick={() => setTrashOpen(false)}
+                    transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
+                  >
+                    <motion.div
+                      ref={setTrashRef as any}
+                      id="trash-dropzone"
+                      className={`pointer-events-auto fixed right-[3rem] bottom-[7.5rem] w-[50vw] h-[50vh] rounded-lg border-2 border-destructive ${isOverTrash ? 'bg-destructive/10' : 'bg-background/40'} ring-1 ring-destructive/40 shadow-lg flex flex-col overflow-hidden`}
+                      variants={trashVariants}
+                      initial="closed"
+                      animate={(isDragging || keepTrashVisible) ? 'open' : 'closed'}
+                      exit="closed"
+                      custom={Math.max(window.innerWidth, window.innerHeight)}
+                      style={{ transformOrigin: 'bottom right', willChange: 'clip-path', backdropFilter: 'blur(8px)' }}
+                      onClick={(e) => e.stopPropagation()}
                       transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
                     >
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Plus className="h-4 w-4" />
-                        <span className="text-sm">新建主项</span>
+                    {/* 中部：提示 */}
+                    <div className="h-full w-full grid place-items-center text-destructive">
+                      <div className="flex items-center gap-3">
+                        <Trash2 className="h-7 w-7" />
+                        <span className="text-xl font-semibold">拖到此处删除（会弹出确认）</span>
                       </div>
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={customCollisionDetection}
-                  onDragStart={handleDragStart}
-                  onDragOver={handleDragOver}
-                  onDragEnd={handleDragEnd}
-                  onDragCancel={handleDragCancel}
-                  measuring={{
-                    droppable: {
-                      strategy: MeasuringStrategy.WhileDragging,
-                    },
-                  }}
-                >
-                  <SortableContext
-                    items={groupItems}
-                    strategy={verticalListSortingStrategy}
-                    key={`group-context-${groupItems.length}`}
-                  >
-                    <div className="space-y-2">
-                      {groups.map((group, gIndex) => (
-                        <SortableGroup
-                          key={`group-${gIndex}`}
-                          group={group}
-                          gIndex={gIndex}
-                          isEdit={isEdit}
-                          openGroups={openGroups}
-                          toggleGroup={toggleGroup}
-                          startLongPress={startLongPress}
-                          clearLongPress={clearLongPress}
-                          activeId={activeId}
-                          overId={overId}
-                          isStaged={isStaged}
-                          onToggleGroupSelect={handleToggleGroupSelect}
-                          onToggleSubSelect={handleToggleSubSelect}
-                          onAddSub={handleAddSub}
-                          editingSubId={editingSubId}
-                          editingSubText={editingSubText}
-                          onEditingChange={handleEditingChange}
-                          onCommitEdit={handleCommitEdit}
-                        />
-                      ))}
                     </div>
-                  </SortableContext>
-                  {/* 拖拽覆盖层 - 禁用动画 */}
-                  <DragOverlay dropAnimation={null}>
-                    {activeItem ? (
-                      <div className="flex items-center justify-between p-2 rounded bg-background border border-border shadow-lg -translate-y-1/2">
-                        <div className="flex items-center space-x-2">
-                          <GripVertical className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-sm text-foreground">{activeItem.name}</span>
-                        </div>
-                        <Badge variant="secondary" className="text-xs">
-                          {activeItem.count}
-                        </Badge>
-                      </div>
-                    ) : null}
-                  </DragOverlay>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-                  {/* 删除投递区覆盖层（拖拽中或手动展开时显示；带放大/缩小动画） */}
-                  <AnimatePresence>
-                    {(isDragging || keepTrashVisible) && (
-                      <motion.div
-                        className="fixed inset-0 z-40 pointer-events-none"
-                        onClick={() => setTrashOpen(false)}
-                        transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
-                      >
-                        <motion.div
-                          ref={setTrashRef as any}
-                          id="trash-dropzone"
-                          className={`pointer-events-auto fixed right-[3rem] bottom-[7.5rem] w-[50vw] h-[50vh] rounded-lg border-2 border-destructive ${isOverTrash ? 'bg-destructive/10' : 'bg-background/40'} ring-1 ring-destructive/40 shadow-lg flex flex-col overflow-hidden`}
-                          variants={trashVariants}
-                          initial="closed"
-                          animate={(isDragging || keepTrashVisible) ? 'open' : 'closed'}
-                          exit="closed"
-                          custom={Math.max(window.innerWidth, window.innerHeight)}
-                          style={{ transformOrigin: 'bottom right', willChange: 'clip-path', backdropFilter: 'blur(8px)' }}
-                          onClick={(e) => e.stopPropagation()}
-                          transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
-                        >
-                          {/* 中部：提示 */}
-                          <div className="h-full w-full grid place-items-center text-destructive">
-                            <div className="flex items-center gap-3">
-                              <Trash2 className="h-7 w-7" />
-                              <span className="text-xl font-semibold">拖到此处删除（会弹出确认）</span>
-                            </div>
-                          </div>
-                        </motion.div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <Dialog open={confirmOpen} onOpenChange={(v) => { setConfirmOpen(!!v); if (!v) { setTrashOpen(false); setKeepTrashVisible(false) } }}>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>确认删除</DialogTitle>
-                      </DialogHeader>
-                      <div className="max-h-[50vh] overflow-auto">
-                        {confirmItems.map((it) => (
-                          <div key={it.id} className="px-2 py-2 text-sm border-b last:border-b-0 border-border/60 flex items-center gap-2">
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                            <span className="truncate">{it.label}</span>
-                          </div>
-                        ))}
+              <Dialog open={confirmOpen} onOpenChange={(v) => { setConfirmOpen(!!v); if (!v) { setTrashOpen(false); setKeepTrashVisible(false) } }}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>确认删除</DialogTitle>
+                  </DialogHeader>
+                  <div className="max-h-[50vh] overflow-auto">
+                    {confirmItems.map((it) => (
+                      <div key={it.id} className="px-2 py-2 text-sm border-b last:border-b-0 border-border/60 flex items-center gap-2">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <span className="truncate">{it.label}</span>
                       </div>
-                      <DialogFooter>
-                        <Button variant="outline" size="sm" onClick={() => { setConfirmOpen(false); setTrashOpen(false); setKeepTrashVisible(false) }}>取消</Button>
-                        <Button variant="destructive" size="sm" onClick={() => {
+                    ))}
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" size="sm" onClick={() => { setConfirmOpen(false); setTrashOpen(false); setKeepTrashVisible(false) }}>取消</Button>
+                    <Button variant="destructive" size="sm" onClick={() => {
                       if (confirmMode === 'single') {
                         const [item] = confirmItems
                         if (!item) return
@@ -1410,17 +1509,18 @@ export default function CategorySidebar({ isCollapsed, onToggle }: CategorySideb
                 )}
               </AnimatePresence>
             </DndContext>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
         </div>
+        </LayoutGroup>
 
         {isEdit && (
           <div className="mt-4 pt-4 border-t border-border">
             <Button
               variant="outline"
               size="sm"
-              onClick={exitEdit}
+              onClick={requestExitEdit}
               className="w-full"
             >
               退出编辑
